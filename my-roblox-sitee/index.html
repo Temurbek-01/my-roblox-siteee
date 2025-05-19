@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Мой Roblox сайт</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+    color: white;
+    padding: 50px 20px;
+  }
+  h1 {
+    font-size: 3rem;
+    border-right: 2px solid white;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-bottom: 20px;
+    min-height: 3.5rem;
+  }
+  .btn {
+    background: #ff4747;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.3rem;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: background 0.3s ease;
+  }
+  .btn:hover {
+    background: #e03e3e;
+  }
+  .ad-block {
+    margin: 40px auto;
+    padding: 20px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    max-width: 400px;
+    box-shadow: 0 0 15px rgba(255,255,255,0.3);
+  }
+  .ad-block p {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+  .ad-block a {
+    display: inline-block;
+    background: #00b2ff;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.3s ease;
+  }
+  .ad-block a:hover {
+    background: #008fcf;
+  }
+</style>
+</head>
+<body>
+
+<h1 id="typed"></h1>
+
+<div class="ad-block">
+  <p>Играйте в мою Roblox игру прямо сейчас!</p>
+  <a href="https://create.roblox.com/dashboard/creations/experiences/7727972080/overview" target="_blank" rel="noopener noreferrer">Играть в Roblox</a>
+</div>
+
+<button class="btn" onclick="alert('Спасибо за поддержку!')">Поддержать меня</button>
+
+<script>
+  const text = "Добро пожаловать в мой Roblox мир!";
+  let index = 0;
+  const typed = document.getElementById('typed');
+
+  function type() {
+    if (index < text.length) {
+      typed.textContent += text.charAt(index);
+      index++;
+      setTimeout(type, 120);
+    } else {
+      typed.style.borderRight = 'none';
+    }
+  }
+
+  window.onload = type;
+</script>
+<section id="quiz" style="max-width: 600px; margin: 50px auto; text-align: left;">
+  <h2>Викторина для Roblox игроков</h2>
+  <div id="quiz-container">
+    <div id="question"></div>
+    <div id="answers"></div>
+    <button id="next-btn" style="margin-top:20px; padding:10px 20px; font-size:16px; cursor:pointer;">Следующий вопрос</button>
+  </div>
+  <div id="result" style="display:none; margin-top: 30px; font-size: 1.2rem; font-weight: 600;"></div>
+  <canvas id="confetti-canvas" style="position: fixed; pointer-events: none; top: 0; left: 0; width: 100vw; height: 100vh;"></canvas>
+</section>
+
+<script>
+  const quizData = [
+    {
+      question: "Как называется платформа, на которой создают игры Roblox?",
+      answers: [
+        { text: "Unity", correct: false },
+        { text: "Roblox Studio", correct: true },
+        { text: "Unreal Engine", correct: false },
+        { text: "GameMaker", correct: false },
+      ]
+    },
+    {
+      question: "Какой язык программирования используют в Roblox?",
+      answers: [
+        { text: "JavaScript", correct: false },
+        { text: "Lua", correct: true },
+        { text: "Python", correct: false },
+        { text: "C#", correct: false },
+      ]
+    },
+    {
+      question: "Как называется виртуальная валюта Roblox?",
+      answers: [
+        { text: "Coins", correct: false },
+        { text: "Robux", correct: true },
+        { text: "Gems", correct: false },
+        { text: "Tokens", correct: false },
+      ]
+    },
+    {
+      question: "Кто создал Roblox?",
+      answers: [
+        { text: "Маркус Перссон", correct: false },
+        { text: "Дэвид Базукки и Эрик Кассел", correct: true },
+        { text: "Гейб Ньюэлл", correct: false },
+        { text: "Джон Кармак", correct: false },
+      ]
+    },
+    {
+      question: "Как называется система внутриигровых уровней в Roblox?",
+      answers: [
+        { text: "Badges", correct: true },
+        { text: "XP Points", correct: false },
+        { text: "Levels", correct: false },
+        { text: "Ranks", correct: false },
+      ]
+    },
+  ];
+
+  const titles = [
+    "Нуб",
+    "Игрок",
+    "Про",
+    "Лучший игрок",
+    "Создатель"
+  ];
+
+  const questionElem = document.getElementById('question');
+  const answersElem = document.getElementById('answers');
+  const nextBtn = document.getElementById('next-btn');
+  const resultElem = document.getElementById('result');
+  const confettiCanvas = document.getElementById('confetti-canvas');
+  const ctx = confettiCanvas.getContext('2d');
+
+  let currentQuestion = 0;
+  let score = 0;
+  let confettiParticles = [];
+
+  function resizeCanvas() {
+    confettiCanvas.width = window.innerWidth;
+    confettiCanvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  function createConfetti() {
+    const colors = ['#ff0a54', '#ff477e', '#ff85a1', '#fbb1b1', '#f9bec7', '#8a1c7c'];
+    for (let i = 0; i < 100; i++) {
+      confettiParticles.push({
+        x: Math.random() * confettiCanvas.width,
+        y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+        r: Math.random() * 6 + 4,
+        d: Math.random() * 20 + 10,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        tilt: Math.random() * 10 - 10,
+        tiltAngleIncremental: (Math.random() * 0.07) + 0.05,
+        tiltAngle: 0,
+      });
+    }
+  }
+
+  function drawConfetti() {
+    ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    confettiParticles.forEach(p => {
+      ctx.beginPath();
+      ctx.lineWidth = p.r / 2;
+      ctx.strokeStyle = p.color;
+      ctx.moveTo(p.x + p.tilt + (p.r / 4), p.y);
+      ctx.lineTo(p.x + p.tilt, p.y + p.tilt + (p.r / 4));
+      ctx.stroke();
+    });
+  }
+
+  function updateConfetti() {
+    confettiParticles.forEach(p => {
+      p.tiltAngle += p.tiltAngleIncremental;
+      p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+      p.x += Math.sin(p.d);
+      p.tilt = Math.sin(p.tiltAngle) * 15;
+
+      if (p.y > confettiCanvas.height) {
+        p.x = Math.random() * confettiCanvas.width;
+        p.y = -10;
+        p.tilt = Math.random() * 10 - 10;
+      }
+    });
+  }
+
+  let confettiActive = false;
+  function runConfetti() {
+    if (!confettiActive) return;
+    drawConfetti();
+    updateConfetti();
+    requestAnimationFrame(runConfetti);
+  }
+
+  function startConfetti() {
+    confettiParticles = [];
+    createConfetti();
+    confettiActive = true;
+    runConfetti();
+    setTimeout(() => { confettiActive = false; ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height); }, 3000);
+  }
+
+  function loadQuestion() {
+    clearAnswers();
+    let q = quizData[currentQuestion];
+    questionElem.textContent = q.question;
+    q.answers.forEach((ans, idx) => {
+      const btn = document.createElement('button');
+      btn.textContent = ans.text;
+      btn.style.display = 'block';
+      btn.style.margin = '10px 0';
+      btn.style.padding = '10px';
+      btn.style.width = '100%';
+      btn.style.fontSize = '1rem';
+      btn.style.cursor = 'pointer';
+      btn.onclick = () => selectAnswer(idx);
+      answersElem.appendChild(btn);
+    });
+    nextBtn.style.display = 'none';
+  }
+
+  function clearAnswers() {
+    answersElem.innerHTML = '';
+  }
+
+  function selectAnswer(index) {
+    const correct = quizData[currentQuestion].answers[index].correct;
+    if (correct) {
+      score++;
+      startConfetti();
+      alert(`+1 балл! Текущий счет: ${score}`);
+    }
+    Array.from(answersElem.children).forEach((btn, i) => {
+      btn.disabled = true;
+      if (quizData[currentQuestion].answers[i].correct) {
+        btn.style.backgroundColor = '#4CAF50';
+        btn.style.color = 'white';
+      } else if (i === index) {
+        btn.style.backgroundColor = '#f44336';
+        btn.style.color = 'white';
+      }
+    });
+    nextBtn.style.display = 'inline-block';
+  }
+
+  nextBtn.onclick = () => {
+    currentQuestion++;
+    if (currentQuestion < quizData.length) {
+      loadQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult() {
+    document.getElementById('quiz-container').style.display = 'none';
+    resultElem.style.display = 'block';
+
+    let title = "Нуб"; // по умолчанию
+    if (score >= 1 && score <= 5) {
+      title = titles[score - 1];
+    }
+    resultElem.innerHTML = `Вы ответили правильно на ${score} из ${quizData.length} вопросов!<br>Ваш титул: <strong>${title}</strong>`;
+  }
+
+  loadQuestion();
+</script>
+<link rel="icon" href="free.icon.png">
+</body>
+</html>
